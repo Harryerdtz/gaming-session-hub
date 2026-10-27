@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0d13" />
+    <meta name="description" content="Gaming-Session-Hub für lokale Spieleabende" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="steam.css" />
+    <title>Gaming-Session-Hub</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="Gaming-Session-Hub Startseite">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>Gaming-Session-Hub</span>
+        </a>
+        <div class="topbar-actions"><button class="steam-button" id="open-steam" type="button"><span class="steam-logo" aria-hidden="true">●</span> Steam verbinden</button><div class="local-badge"><span class="status-dot"></span>Nur auf diesem Gerät</div></div>
+      </header>
+
+      <main id="top">
+        <section class="hero" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">Bereit für die nächste Runde?</p>
+            <h1 id="page-title">Euer Abend.<br /><em>Das richtige Spiel.</em></h1>
+            <p class="hero-copy">Sammelt eure Favoriten, stimmt ab und lasst den Zufall entscheiden.</p>
+          </div>
+          <button class="primary-button hero-action" id="open-add" type="button"><span aria-hidden="true">+</span> Spiel hinzufügen</button>
+        </section>
+
+        <section class="session-panel" aria-labelledby="session-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">Für heute Abend</p>
+              <h2 id="session-title">Session-Auswahl</h2>
+            </div>
+            <span class="count-pill" id="session-count">0 Spiele</span>
+          </div>
+          <div id="session-empty" class="empty-session">
+            <span class="empty-icon" aria-hidden="true">✦</span>
+            <div><strong>Noch keine Vorschläge</strong><p>Füge Spiele hinzu und tippe auf „Vorschlagen“.</p></div>
+          </div>
+          <div class="session-list" id="session-list" aria-live="polite"></div>
+          <div class="session-actions">
+            <button class="secondary-button" id="pick-random" type="button" disabled><span aria-hidden="true">✦</span> Zufällig wählen</button>
+            <button class="text-button" id="clear-session" type="button" disabled>Session leeren</button>
+          </div>
+          <div id="winner" class="winner" hidden></div>
+        </section>
+
+        <section class="library-section" aria-labelledby="library-title">
+          <div class="section-heading library-heading">
+            <div><p class="eyebrow">Eure Sammlung</p><h2 id="library-title">Alle Spiele <span id="library-count">0</span></h2></div>
+            <button class="icon-button" id="open-add-mobile" type="button" aria-label="Spiel hinzufügen">+</button>
+          </div>
+          <div class="filters" aria-label="Spiele filtern">
+            <label class="select-wrap"><span>Plattform</span><select id="platform-filter"><option value="all">Alle Plattformen</option></select></label>
+            <label class="select-wrap"><span>Spieler</span><select id="players-filter"><option value="all">Alle Spielerzahlen</option><option value="2">2 Spieler</option><option value="3-4">3–4 Spieler</option><option value="5+">5+ Spieler</option></select></label>
+          </div>
+          <div id="game-grid" class="game-grid" aria-live="polite"></div>
+          <div id="library-empty" class="empty-library" hidden><span aria-hidden="true">◌</span><h3>Noch keine Spiele</h3><p>Deine Sammlung wartet auf ihren ersten Eintrag.</p><button class="primary-button" type="button" data-action="add">Erstes Spiel hinzufügen</button></div>
+        </section>
+      </main>
+
+      <footer><span>Gaming-Session-Hub</span><span class="footer-note">Daten bleiben lokal in diesem Browser und werden nicht zwischen Geräten synchronisiert.</span></footer>
+    </div>
+
+    <dialog id="game-dialog" aria-labelledby="dialog-title">
+      <form method="dialog" id="game-form">
+        <div class="dialog-head"><div><p class="eyebrow">Sammlung erweitern</p><h2 id="dialog-title">Spiel hinzufügen</h2></div><button class="close-button" value="cancel" aria-label="Dialog schließen">×</button></div>
+        <input type="hidden" id="game-id" />
+        <label>Spielname<input id="game-name" name="name" required maxlength="60" placeholder="z. B. Catan" /></label>
+        <label>Plattform<input id="game-platform" name="platform" required maxlength="30" placeholder="z. B. PC, PS5, Brettspiel" /></label>
+        <label>Spielerzahl<input id="game-players" name="players" required inputmode="numeric" pattern="[0-9]+" min="1" max="99" type="number" placeholder="z. B. 4" /></label>
+        <p class="form-error" id="form-error" role="alert"></p>
+        <div class="dialog-actions"><button class="secondary-button" value="cancel" type="button" id="cancel-dialog">Abbrechen</button><button class="primary-button" value="default" type="submit">Speichern</button></div>
+      </form>
+    </dialog>
+    <dialog id="steam-dialog" aria-labelledby="steam-title">
+      <form method="dialog" id="steam-form">
+        <div class="dialog-head"><div><p class="eyebrow">Bibliothek importieren</p><h2 id="steam-title">Steam verbinden</h2></div><button class="close-button" value="cancel" aria-label="Dialog schließen">×</button></div>
+        <p class="dialog-copy">Gib deine Steam-ID oder den Profil-Link ein. Dein Profil muss öffentlich sein, damit die Spielebibliothek importiert werden kann.</p>
+        <label>Steam-ID oder Profil-Link<input id="steam-profile" required placeholder="z. B. 76561198000000000" autocomplete="url" /></label>
+        <p class="form-error" id="steam-error" role="alert"></p>
+        <div class="dialog-actions"><button class="secondary-button" value="cancel" type="button" id="cancel-steam">Abbrechen</button><button class="primary-button" value="default" type="submit">Bibliothek importieren</button></div>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
